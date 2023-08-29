@@ -272,8 +272,7 @@ void os_getCmdlineAndUserInfo(JNIEnv *env, jobject jinfo, pid_t pid) {
         mib[2] = pid;
         size = (size_t) maxargs;
         if (sysctl(mib, 3, args, &size, NULL, 0) == -1) {
-            if (errno != EINVAL && errno != EIO) {
-                // If the pid is invalid, the information returned is empty and no exception
+            if (errno != EINVAL) {
                 JNU_ThrowByNameWithLastError(env,
                     "java/lang/RuntimeException", "sysctl failed");
             }
@@ -301,3 +300,4 @@ void os_getCmdlineAndUserInfo(JNIEnv *env, jobject jinfo, pid_t pid) {
     // Free the arg buffer
     free(args);
 }
+

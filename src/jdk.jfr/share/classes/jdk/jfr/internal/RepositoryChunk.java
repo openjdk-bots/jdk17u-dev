@@ -29,10 +29,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.channels.ReadableByteChannel;
 import java.time.Instant;
-import java.time.Period;
-import java.time.Duration;
 import java.util.Comparator;
-import java.util.Optional;
 
 import jdk.jfr.internal.SecuritySupport.SafePath;
 
@@ -58,25 +55,20 @@ final class RepositoryChunk {
         this.unFinishedRAF = SecuritySupport.createRandomAccessFile(chunkFile);
     }
 
-    boolean finish(Instant endTime) {
+    void finish(Instant endTime) {
         try {
-            unFinishedRAF.close();
-            size = SecuritySupport.getFileSize(chunkFile);
-            this.endTime = endTime;
-            if (Logger.shouldLog(LogTag.JFR_SYSTEM, LogLevel.DEBUG)) {
-                Logger.log(LogTag.JFR_SYSTEM, LogLevel.DEBUG, "Chunk finished: " + chunkFile);
-            }
-            return true;
+            finishWithException(endTime);
         } catch (IOException e) {
-            final String reason;
-            if (isMissingFile()) {
-                reason = "Chunkfile \""+ getFile() + "\" is missing. " +
-                         "Data loss might occur from " + getStartTime() + " to " + endTime;
-            } else {
-                reason = e.getClass().getName();
-            }
-            Logger.log(LogTag.JFR, LogLevel.ERROR, "Could not finish chunk. " + reason);
-            return false;
+            Logger.log(LogTag.JFR, LogLevel.ERROR, "Could not finish chunk. " + e.getClass() + " "+ e.getMessage());
+        }
+    }
+
+    private void finishWithException(Instant endTime) throws IOException {
+        unFinishedRAF.close();
+        this.size = SecuritySupport.getFileSize(chunkFile);
+        this.endTime = endTime;
+        if (Logger.shouldLog(LogTag.JFR_SYSTEM, LogLevel.DEBUG)) {
+            Logger.log(LogTag.JFR_SYSTEM, LogLevel.DEBUG, "Chunk finished: " + chunkFile);
         }
     }
 
@@ -111,14 +103,16 @@ final class RepositoryChunk {
     }
 
     private void destroy() {
+        if (!isFinished()) {
+            finish(Instant.MIN);
+        }
+         delete(chunkFile);
         try {
             unFinishedRAF.close();
         } catch (IOException e) {
             if (Logger.shouldLog(LogTag.JFR, LogLevel.ERROR)) {
                 Logger.log(LogTag.JFR, LogLevel.ERROR, "Could not close random access file: " + chunkFile.toString() + ". File will not be deleted due to: " + e.getMessage());
             }
-        } finally {
-            delete(chunkFile);
         }
     }
 
@@ -185,13 +179,5 @@ final class RepositoryChunk {
 
     public SafePath getFile() {
         return chunkFile;
-    }
-
-    boolean isMissingFile() {
-        try {
-            return !SecuritySupport.exists(chunkFile);
-        } catch (IOException ioe) {
-            return true;
-        }
     }
 }

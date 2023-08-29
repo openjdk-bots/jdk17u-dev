@@ -22,7 +22,7 @@
  */
 
 /* @test
- * @bug 4770745 6218846 6218848 6237956 8313765
+ * @bug 4770745 6218846 6218848 6237956
  * @summary test for correct detection and reporting of corrupted zip files
  * @author Martin Buchholz
  */
@@ -113,9 +113,8 @@ public class CorruptedZipFiles {
 
         err.println("corrupted CENEXT 1");
         bad = good.clone();
-        bad[cenpos+CENEXT]   = (byte)0xff;
-        bad[cenpos+CENEXT+1] = (byte)0xff;
-        checkZipException(bad, ".*extra data field size too long.*");
+        bad[cenpos+CENEXT]++;
+        checkZipException(bad, ".*invalid zip64 extra data field size.*");
 
         err.println("corrupted CENEXT 2");
         bad = good.clone();

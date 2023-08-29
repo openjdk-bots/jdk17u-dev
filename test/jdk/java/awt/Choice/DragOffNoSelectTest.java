@@ -71,7 +71,7 @@ public class DragOffNoSelectTest implements WindowListener, Runnable {
         }
         frame.add(theChoice);
         frame.addWindowListener(testInstance);
-        frame.pack();
+        frame.setSize(400, 400);
         frame.setLocationRelativeTo(null);
 
         frame.setVisible(true);

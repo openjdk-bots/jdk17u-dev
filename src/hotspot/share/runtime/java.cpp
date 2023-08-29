@@ -71,7 +71,6 @@
 #include "runtime/task.hpp"
 #include "runtime/thread.inline.hpp"
 #include "runtime/timer.hpp"
-#include "runtime/trimNativeHeap.hpp"
 #include "runtime/vmOperations.hpp"
 #include "runtime/vmThread.hpp"
 #include "runtime/vm_version.hpp"
@@ -467,8 +466,6 @@ void before_exit(JavaThread* thread, bool halt) {
   if (StringDedup::is_enabled()) {
     StringDedup::stop();
   }
-
-  NativeHeapTrimmer::cleanup();
 
   // Stop concurrent GC threads
   Universe::heap()->stop();

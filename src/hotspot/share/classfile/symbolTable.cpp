@@ -37,7 +37,6 @@
 #include "runtime/atomic.hpp"
 #include "runtime/interfaceSupport.inline.hpp"
 #include "runtime/timerTrace.hpp"
-#include "runtime/trimNativeHeap.hpp"
 #include "services/diagnosticCommand.hpp"
 #include "utilities/concurrentHashTable.inline.hpp"
 #include "utilities/concurrentHashTableTasks.inline.hpp"
@@ -698,7 +697,6 @@ void SymbolTable::clean_dead_entries(JavaThread* jt) {
 
   SymbolTableDeleteCheck stdc;
   SymbolTableDoDelete stdd;
-  NativeHeapTrimmer::SuspendMark sm("symboltable");
   {
     TraceTime timer("Clean", TRACETIME_LOG(Debug, symboltable, perf));
     while (bdt.do_task(jt, stdc, stdd)) {

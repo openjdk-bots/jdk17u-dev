@@ -362,7 +362,3 @@ JVM_END
 JVM_ENTRY_NO_ENV(jboolean, jfr_set_handler(JNIEnv * env, jobject jvm, jobject clazz, jobject handler))
   return JfrJavaSupport::set_handler(clazz, handler, thread);
 JVM_END
-
-JVM_ENTRY_NO_ENV(void, jfr_emit_data_loss(JNIEnv* env, jclass jvm, jlong bytes))
-  EventDataLoss::commit(bytes, min_jlong);
-JVM_END

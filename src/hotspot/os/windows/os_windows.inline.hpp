@@ -93,7 +93,7 @@ inline void os::PlatformMonitor::notify_all() {
   WakeAllConditionVariable(&_cond);
 }
 
-// Trim-native support, stubbed out for now, may be enabled later
+// stubbed-out trim-native support
 inline bool os::can_trim_native_heap() { return false; }
 inline bool os::trim_native_heap(os::size_change_t* rss_change) { return false; }
 

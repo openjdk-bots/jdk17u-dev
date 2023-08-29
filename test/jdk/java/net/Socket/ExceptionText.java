@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2023, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -57,7 +57,6 @@
  */
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.channels.AsynchronousSocketChannel;
@@ -84,7 +83,6 @@ public class ExceptionText {
     static final InetSocketAddress dest  = Utils.refusingEndpoint();
     static final String PORT = ":" + Integer.toString(dest.getPort());
     static final String HOST = dest.getHostString();
-    static final InetAddress ADDRESS = dest.getAddress();
 
     static void test(boolean withProperty) {
         // Socket
@@ -106,11 +104,11 @@ public class ExceptionText {
                 throw new RuntimeException("Test failed: exception contains address info");
             }
         } else {
-            if (!msg.contains(HOST) || !msg.contains(PORT) ||
-                !msg.contains(ADDRESS.getHostAddress())) {
+            if (!msg.contains(HOST) || !msg.contains(PORT)) {
                 if (e instanceof ClosedChannelException)
                     return; // has no detail msg
-                throw new RuntimeException("Test failed: message '" + msg + "' is missing address info " + dest);
+                System.err.println("msg = " + msg);
+                throw new RuntimeException("Test failed: exception does not contain address info");
             }
         }
     }

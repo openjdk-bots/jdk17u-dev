@@ -410,6 +410,7 @@ public:
   virtual void dump_spec(outputStream *st) const;
   virtual void related(GrowableArray <Node *> *in_rel, GrowableArray <Node *> *out_rel, bool compact) const;
 #endif
+  void mark_projections_unsafe_for_fold_compare() const;
 };
 
 class RangeCheckNode : public IfNode {
